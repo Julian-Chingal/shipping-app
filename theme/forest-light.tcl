@@ -292,7 +292,6 @@ namespace eval ttk::theme::forest-light {
                 pressed $I(rect-accent) \
                 active $I(rect-accent-hover) \
             ] -border 4 -sticky nsew
-
         # Checkbutton
         ttk::style configure TCheckbutton -padding 4
 
