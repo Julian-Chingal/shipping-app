@@ -3,19 +3,8 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 
-# Setup ---------------------------------------------------------
-app = tk.Tk()
-app.title('Generador Guias de Despacho')
-# app.geometry('900x400')
-app.option_add('*tearOff', False)
 
-# Make the app responsive
-app.columnconfigure(index=0, weight=1)
-app.columnconfigure(index=1, weight=1)
-app.columnconfigure(index=2, weight=1)
-app.rowconfigure(index=0, weight=0)
-app.rowconfigure(index=1, weight=1)
-app.rowconfigure(index=2, weight=1)
+
 
 # Functions ------------------------------------------------------
 def showClient():
@@ -38,9 +27,7 @@ def showClient():
             tree_clients.insert('','end', values=info)
         
         btn_add.config(state="normal")
-    
-    
-        
+         
 def showAllClient():
     data = readData()
     tree_clients.delete(*tree_clients.get_children()) #Limpiar antes de poner informacion
@@ -63,12 +50,35 @@ def inserClient():
         txt_address_info.insert(1.0, values[2])
         btn_impr.config(state="normal")
 
+def changeTheme():
+    currentTheme = style.theme_use()    
+    if currentTheme == 'forest-light':
+        style.theme_use('forest-dark')
+        app.config(bg="#313131")
+    else:
+        style.theme_use('forest-light')
+        app.config(bg="#ffffff")
+
+# Setup ---------------------------------------------------------
+app = tk.Tk()
+app.title('Generador Guias de Despacho')
+# app.geometry('900x500')
+app.option_add('*tearOff', False)
+
+# Make the app responsive
+app.columnconfigure(index=0, weight=1)
+app.columnconfigure(index=1, weight=1)
+app.columnconfigure(index=2, weight=1)
+app.rowconfigure(index=0, weight=0)
+app.rowconfigure(index=1, weight=1)
+app.rowconfigure(index=2, weight=1)
+
 # Style ----------------------------------------------------------
 style = ttk.Style(app)
 
 # tlc file
+app.tk.call('source', 'theme/forest-dark.tcl')
 app.tk.call('source', 'theme/forest-light.tcl')
-# app.tk.call('source', 'theme/forest-dark.tcl')
 
 style.theme_use('forest-light')
 
@@ -76,15 +86,20 @@ style.theme_use('forest-light')
 header_frame = ttk.Frame(app, padding=(10,5))
 header_frame.grid(row=0, column=0, columnspan=2, padx=(10, 10), pady=(10, 5), sticky="nsew")
 
-label_title = tk.Label(header_frame, text="Generador Plantilla Despacho de Clientes", font=('',15))
+label_title = ttk.Label(header_frame, text="Generador Plantilla Despacho de Clientes", font=('',15))
 label_title.grid(row=0,column=0,padx=0,pady=(10,20), sticky="w")
 
-change_theme = ttk.Checkbutton(header_frame, text="Tema", style="Switch")
+change_theme = ttk.Checkbutton(header_frame, text="Tema", style="Switch", command=changeTheme)
 change_theme.grid(row=1,column=0, padx=0, pady=(0,10), sticky="se")
 
 # Search Frame -----------------------------------------------------------------------------------------
 search_frame = ttk.LabelFrame(app, text="Busqueda Cliente", padding=(10,10))
 search_frame.grid(row=1, column=0, padx=(5, 5), pady=(0, 10), sticky="nsew")
+
+# Search Frame
+search_frame.columnconfigure(0, weight=1)  # Ajustar la primera columna al centro
+search_frame.columnconfigure(1, weight=0)  # Mantener el ancho fijo del botón
+search_frame.columnconfigure(2, weight=0)  # Mantener el ancho fijo del botón
 
 # Entry
 findEntry = ttk.Entry(search_frame)
@@ -108,6 +123,14 @@ tree_clients.grid(row=2, column=0, columnspan=3, padx=5, pady=10, sticky="nsew")
 # Template Frame -----------------------------------------------------------------------------------------
 template_frame = ttk.LabelFrame(app, text="Plantilla", padding=(10,10))
 template_frame.grid(row=1, column=1, padx=(10, 5), pady=(0, 10), sticky="nsew")
+
+
+# Template Frame
+template_frame.columnconfigure(0, weight=1)  # Ajustar la primera columna al centro
+template_frame.rowconfigure((0, 2, 4), weight=0)  # Mantener el alto fijo de las etiquetas
+template_frame.rowconfigure((1, 3, 5), weight=0)  # Mantener el alto fijo de las entradas
+template_frame.rowconfigure(6, weight=0)  # Mantener el alto fijo del botón
+
 
 # Name
 label_name = ttk.Label(template_frame, text="Nombre del Cliente")
