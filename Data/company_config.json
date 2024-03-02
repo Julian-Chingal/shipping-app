@@ -1,7 +1,7 @@
 {
     "name": "Cincom S.A.S",
-    "Phone": 3850245,
+    "phone": "3850245",
     "city": "Barranquilla",
-    "Address": "CRA 47 No 75 - 34",
+    "address": "CRA 47 No 75 - 34",
     "printer": "impresora"
 }

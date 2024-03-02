@@ -1,4 +1,5 @@
-from dataFile import findClient, readData
+from src.dataFile import findClient, readData
+from src.template.templatePDF import printTemplate
 import tkinter as tk
 from tkinter import ttk, messagebox
 
@@ -98,7 +99,7 @@ class MyApp:
         self.txt_address_info.grid(row=5, column=0, padx=6, pady=(0,20), sticky="ew")
 
         # Button
-        self.btn_impr = ttk.Button(self.template_frame, text="Imprimir",state="disabled", style="Accent.TButton")
+        self.btn_impr = ttk.Button(self.template_frame, text="Imprimir",state="disabled", command=self.printGuide, style="Accent.TButton")
         self.btn_impr.grid(row=6, column=0 , padx=5, pady=(0,10), sticky="nsew")
 
         self.center_window()
@@ -152,6 +153,14 @@ class MyApp:
             self.entry_phone_info.insert(0, values[1])
             self.txt_address_info.insert(1.0, values[2])
             self.btn_impr.config(state="normal")
+
+    def printGuide(self):
+        name = self.entry_name_info.get()
+        phone = self.entry_phone_info.get()
+        address = self.txt_address_info.get("1.0", tk.END).strip() 
+
+        pdf = printTemplate(name, phone, address )
+        pdf.saveTemplate()
 
     def changeTheme(self):
         currentTheme = self.style.theme_use()    
