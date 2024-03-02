@@ -37,21 +37,22 @@ class printTemplate():
         c.drawInlineImage(self.image, x=100, y=350, width=100, height=50, preserveAspectRatio=True)
         c.rect(x=100, y=500, width=100, height=50, stroke=1, fill=0)
 
+        c.line(70,260, 200,260)
+
         # Client Info
         c.setFont("BookAntiqua-Bold", 14) 
-        c.drawString(260, 200, "Señor(a): ") 
-        c.drawString(260, 150, "Telefono: ") 
-        c.drawString(260, 100, "Dirección: ")
+        c.drawString(300, 200, "Señor(a): ") 
+        c.drawString(300, 150, "Telefono: ") 
+        c.drawString(300, 100, "Dirección: ")
 
         c.setFont("BookAntiqua", 15) 
-        c.drawString(260, 180, self.name) 
-        c.drawString(260, 130, self.phone) 
+        c.drawString(300, 180, self.name) 
+        c.drawString(300, 130, self.phone) 
         address_lines = self.address.splitlines()
         y_position = 80
         for line in address_lines:
-            c.drawString(260, y_position, line)
+            c.drawString(300, y_position, line)
             y_position -= 20  # Aj
-        # c.drawString(260, 80, self.address) 
 
     def saveTemplate(self):
         c = canvas.Canvas(self.path_pdf, pagesize=self.half_letter)
@@ -59,6 +60,7 @@ class printTemplate():
         self.createTemplate(c)
         c.showPage()
         c.save()
+        
 
-# pdf = printTemplate("juan Perez de la  communicacion olla S.A.S","1233516", "barrio paraiso \n Pepe perez")
-# pdf.saveTemplate()
+pdf = printTemplate("juan Perez de la  communicacion olla S.A.S","1233516", "barrio paraiso \n Pepe perez")
+pdf.saveTemplate()

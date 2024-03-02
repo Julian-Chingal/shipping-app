@@ -1,7 +1,17 @@
+# -*- coding: utf-8 -*-
+# MyApp.py
+
+"""
+MyApp - Una aplicación para generar plantillas de despacho de clientes.
+
+Este programa proporciona una interfaz gráfica de usuario (GUI) para buscar clientes,
+editar sus detalles y generar plantillas de despacho de clientes en formato PDF.
+"""
 from src.dataFile import findClient, readData
 from src.template.templatePDF import printTemplate
 import tkinter as tk
 from tkinter import ttk, messagebox
+import subprocess
 
 class MyApp:
     def __init__(self, root):
@@ -19,17 +29,20 @@ class MyApp:
 
         # Make the self.root responsive
         self.root.columnconfigure(index=0, weight=1)
-        self.root.columnconfigure(index=1, weight=1)
-        self.root.columnconfigure(index=2, weight=1)
         self.root.rowconfigure(index=0, weight=0)
-        self.root.rowconfigure(index=1, weight=1)
-        self.root.rowconfigure(index=2, weight=1)
 
+        self.main_frame = tk.Frame(self.root)
+        self.main_frame.grid(row=0, column=0, sticky="nsew")
+        self.main_frame.columnconfigure(0, weight=1)
+        self.main_frame.rowconfigure(0, weight=0)
+        self.main_frame.rowconfigure(1, weight=1)
+
+        # Init UI
         self.setup_ui()
     
     def setup_ui(self):
         # Header Frame -----------------------------------------------------------------------------------------
-        self.header_frame = ttk.Frame(self.root, padding=(10,5))
+        self.header_frame = ttk.Frame(self.main_frame, padding=(10,5))
         self.header_frame.grid(row=0, column=0, columnspan=2, padx=(10, 10), pady=(10, 5), sticky="nsew")
 
         self.label_title = ttk.Label(self.header_frame, text="Generador Plantilla Despacho de Clientes", font=('',15))
@@ -39,7 +52,7 @@ class MyApp:
         self.change_theme.grid(row=1,column=0, padx=0, pady=(0,10), sticky="se")
 
         # Search Frame -----------------------------------------------------------------------------------------
-        self.search_frame = ttk.LabelFrame(self.root, text="Busqueda Cliente", padding=(10,10))
+        self.search_frame = ttk.LabelFrame(self.main_frame, text="Busqueda Cliente", padding=(10,10))
         self.search_frame.grid(row=1, column=0, padx=(5, 5), pady=(0, 10), sticky="nsew")
 
         # Search Frame
@@ -49,25 +62,25 @@ class MyApp:
 
         # Entry
         self.findEntry = ttk.Entry(self.search_frame)
-        self.findEntry.insert(0, "Escriba un Nombre")
-        self.findEntry.grid(row=1,column=0, padx=(0,5), pady=(0,10), sticky="ew")
+        # self.findEntry.insert(0, "Escriba un Nombre")
+        self.findEntry.grid(row=0,column=0, padx=(0,5), pady=(0,10), sticky="ew")
 
         # Button
         self.btn_search = ttk.Button(self.search_frame, text="Buscar", style="Accent.TButton", command=self.showClient)
-        self.btn_search.grid(row=1, column=1, padx=(0,5), pady=(0,10), sticky="nsew" )
+        self.btn_search.grid(row=0, column=1, padx=(0,5), pady=(0,10), sticky="nsew" )
 
         self.btn_add = ttk.Button(self.search_frame, text="Editar", state="disabled", command=self.inserClient)
-        self.btn_add.grid(row=1, column=2, padx=(0,5), pady=(0,10), sticky="nsew")
+        self.btn_add.grid(row=0, column=2, padx=(0,5), pady=(0,10), sticky="nsew")
 
         #Tree
         self.tree_clients = ttk.Treeview(self.search_frame, columns=('Nombre', 'Telefono', 'Direccion'), show='headings')
         self.tree_clients.heading('Nombre', text="Nombre")
         self.tree_clients.heading('Telefono', text="Telefono")
         self.tree_clients.heading('Direccion', text="Direccion")
-        self.tree_clients.grid(row=2, column=0, columnspan=3, padx=5, pady=10, sticky="nsew")
+        self.tree_clients.grid(row=1, column=0, columnspan=3, padx=(5,0), pady=(10,0), sticky="nsew")
 
         # Template Frame -----------------------------------------------------------------------------------------
-        self.template_frame = ttk.LabelFrame(self.root, text="Plantilla", padding=(10,10))
+        self.template_frame = ttk.LabelFrame(self.main_frame, text="Plantilla", padding=(10,10))
         self.template_frame.grid(row=1, column=1, padx=(10, 5), pady=(0, 10), sticky="nsew")
 
 
@@ -95,14 +108,24 @@ class MyApp:
         self.label_address = ttk.Label(self.template_frame, text="Direccion del Cliente")
         self.label_address.grid(row=4, column=0, padx=3, pady=(0,1), sticky="w")
 
-        self.txt_address_info = tk.Text(self.template_frame, height=4, width= 5 ,wrap='word')
+        self.txt_address_info = tk.Text(self.template_frame, height=6, width= 7 ,wrap='word')
         self.txt_address_info.grid(row=5, column=0, padx=6, pady=(0,20), sticky="ew")
 
         # Button
         self.btn_impr = ttk.Button(self.template_frame, text="Imprimir",state="disabled", command=self.printGuide, style="Accent.TButton")
         self.btn_impr.grid(row=6, column=0 , padx=5, pady=(0,10), sticky="nsew")
 
-        self.center_window()
+        # Footer Frame -----------------------------------------------------------------------------------------
+        self.footer_frame = ttk.Frame(self.main_frame, padding=(10,5))
+        self.footer_frame.grid(row=2, column=0, columnspan=2, padx=(5, 5), pady=(5, 5), sticky="nsew")
+
+        self.label_signature = ttk.Label(self.footer_frame, text="Desarrollado por: Julian Chingal", font=('',10), foreground="gray")
+        self.label_signature.grid(row=0,column=0,padx=0,pady=(2,0), sticky="e")
+
+        # Configurar el envasado de los frames
+        self.root.pack_propagate(False)
+        self.main_frame.pack_propagate(False)
+        # self.center_window()
 
     def center_window(self):
         self.root.update()
@@ -161,6 +184,9 @@ class MyApp:
 
         pdf = printTemplate(name, phone, address )
         pdf.saveTemplate()
+        path = pdf.path_pdf
+        messagebox.showinfo('Success', 'PDF Generado Exitosamente')
+        subprocess.Popen([path], shell=True)
 
     def changeTheme(self):
         currentTheme = self.style.theme_use()    
