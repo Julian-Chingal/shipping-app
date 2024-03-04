@@ -71,7 +71,6 @@ class MyApp:
 
         # Entry
         self.findEntry = ttk.Entry(self.search_frame)
-        # self.findEntry.insert(0, "Escriba un Nombre")
         self.findEntry.grid(row=0,column=0, padx=(0,5), pady=(0,10), sticky="ew")
 
         # Button
@@ -113,22 +112,34 @@ class MyApp:
         self.entry_phone_info = ttk.Entry(self.template_frame)
         self.entry_phone_info.grid(row=3, column=0, padx=5, pady=(0,10), sticky="ew")
 
+        # City
+        self.label_city_info = ttk.Label(self.template_frame, text= "Ciudad")
+        self.label_city_info.grid(row=0, column=1, padx=4, pady=(0,1), sticky="w")
+
+        self.entry_city_info = ttk.Entry(self.template_frame)
+        self.entry_city_info.grid(row=1, column=1, padx=5,pady=(0,10),  sticky="ew")
+
+        # Select
+        self.check = tk.BooleanVar(value=False)
+        self.pickUpOffice = ttk.Checkbutton(self.template_frame, text="Oficina?", variable= self.check)
+        self.pickUpOffice.grid(row=3, column=1, padx=4, pady=(0,10) , sticky="nsew")
+
         # Address
         self.label_address = ttk.Label(self.template_frame, text="Direccion del Cliente")
         self.label_address.grid(row=4, column=0, padx=3, pady=(0,1), sticky="w")
 
         self.txt_address_info = tk.Text(self.template_frame, height=6, width= 7 ,wrap='word')
-        self.txt_address_info.grid(row=5, column=0, padx=6, pady=(0,20), sticky="ew")
+        self.txt_address_info.grid(row=5, column=0,columnspan=2, padx=6, pady=(0,20), sticky="ew")
 
         # Button
-        self.btn_impr = ttk.Button(self.template_frame, text="Imprimir",state="disabled", command=self.printGuide, style="Accent.TButton")
-        self.btn_impr.grid(row=6, column=0 , padx=5, pady=(0,10), sticky="nsew")
+        self.btn_impr = ttk.Button(self.template_frame, text="Imprimir",state="disabled", command=self.printGuide, style="Accent.TButton", width=10)
+        self.btn_impr.grid(row=6, column=0 , padx=4, columnspan=2,  pady=(0,10), sticky="nsew")
 
         # Footer Frame -----------------------------------------------------------------------------------------
         self.footer_frame = ttk.Frame(self.main_frame, padding=(10,5))
         self.footer_frame.grid(row=2, column=0, columnspan=2, padx=(5, 5), pady=(5, 5), sticky="nsew")
 
-        self.label_signature = ttk.Label(self.footer_frame, text="Desarrollado por: Julian Chingal", font=('',10), foreground="gray")
+        self.label_signature = ttk.Label(self.footer_frame, text="POWERED BY Julian Chingal", font=('',10), foreground="gray")
         self.label_signature.grid(row=0,column=0,padx=0,pady=(2,0), sticky="e")
 
         # Configurar el envasado de los frames
@@ -177,6 +188,7 @@ class MyApp:
         self.entry_name_info.delete(0, 'end')
         self.entry_phone_info.delete(0, 'end')
         self.txt_address_info.delete(1.0, 'end')
+        self.entry_city_info.delete(0, 'end')
 
         if select:
             item = self.tree_clients.item(select)
@@ -190,9 +202,11 @@ class MyApp:
         name = self.entry_name_info.get()
         phone = self.entry_phone_info.get()
         address = self.txt_address_info.get("1.0", tk.END).strip() 
+        city = self.entry_city_info.get()
 
-        pdf = printTemplate(name, phone, address )
-        pdf.saveTemplate()
+        pdf = printTemplate(name, phone, address, city )
+        pdf.saveTemplate(self.check.get())
+
         path = os.path.join(pdf.path_pdf)
         print("file path route pdf: "+ path)
         if pdf:
