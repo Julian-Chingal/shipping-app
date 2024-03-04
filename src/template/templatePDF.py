@@ -12,9 +12,10 @@ class printTemplate():
         self.address = address
 
         # Files Path
-        self.path_pdf = os.path.join("src", "template", "template.pdf")
-        self.fileJson = os.path.join("Data", "company_config.json")
-        self.image = os.path.join("src", "img", "logo.png")
+        current_path = os.path.abspath(os.path.join(os.path.dirname(__file__),".."))
+        self.path_pdf = os.path.join(current_path, "template", "template.pdf")
+        self.fileJson = os.path.join(current_path, "Data", "company_config.json")
+        self.image = os.path.join(current_path,"img", "logo.png")
 
         # Sheet size config
         self.half_letter = (letter[0], letter[1] / 2)
@@ -30,14 +31,15 @@ class printTemplate():
         company = self.extractCompanyInfo()
 
         # Company Info
-        c.drawString(70, 310, company["name"]) 
-        c.drawString(70, 290, "Tel: " + company["phone"]) 
-        c.drawString(70, 270, company["address"]) 
+        c.drawString(70, 320, company["name"]) 
+        c.drawString(70, 300, "Tel: " + company["phone"]) 
+        c.drawString(70, 280, company["address"]) 
+        c.drawString(70, 260, company["city"])
 
-        c.drawInlineImage(self.image, x=100, y=350, width=100, height=50, preserveAspectRatio=True)
-        c.rect(x=100, y=500, width=100, height=50, stroke=1, fill=0)
+        # c.drawInlineImage(self.image, x=100, y=350, width=100, height=50, preserveAspectRatio=True)
+        # c.rect(x=100, y=500, width=100, height=50, stroke=1, fill=0)
 
-        c.line(70,260, 200,260)
+        c.line(70,250, 200,250)
 
         # Client Info
         c.setFont("BookAntiqua-Bold", 14) 

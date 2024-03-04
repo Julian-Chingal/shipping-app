@@ -1,8 +1,13 @@
 import pandas  as pd
 from difflib import get_close_matches as gcm
+import os
 
 def readData():
-    file = pd.read_excel('Data/Clientes.xlsx')
+    current_path = os.path.abspath(os.path.join(os.path.dirname(__file__),".."))
+    file_path = os.path.join(current_path,"src","Data", "Clientes.xlsx")
+    print(file_path)
+    file = pd.read_excel(file_path)
+
     return file
 
 def findClient(clientName):

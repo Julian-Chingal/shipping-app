@@ -10,15 +10,17 @@ editar sus detalles y generar plantillas de despacho de clientes en formato PDF.
 from src.dataFile import findClient, readData
 from src.template.templatePDF import printTemplate
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox,Tk
 import subprocess
+import os
 
 class MyApp:
-    def __init__(self, root):
+    def __init__(self, root:Tk):
         self.root = root
+        self.root.resizable(False, False)
         self.root.title('Generador Guias de Despacho')
         self.root.option_add('*tearOff', False)
-
+        self.root.iconbitmap(os.path.join("src","img","icon.ico"))
         # Style 
         self.style = ttk.Style(self.root)
 
@@ -31,7 +33,7 @@ class MyApp:
         self.root.columnconfigure(index=0, weight=1)
         self.root.rowconfigure(index=0, weight=0)
 
-        self.main_frame = tk.Frame(self.root)
+        self.main_frame = ttk.Frame(self.root)
         self.main_frame.grid(row=0, column=0, sticky="nsew")
         self.main_frame.columnconfigure(0, weight=1)
         self.main_frame.rowconfigure(0, weight=0)
@@ -49,7 +51,7 @@ class MyApp:
         self.label_title.grid(row=0,column=0,padx=0,pady=(10,20), sticky="w")
 
         self.change_theme = ttk.Checkbutton(self.header_frame, text="Tema", style="Switch", command=self.changeTheme)
-        self.change_theme.grid(row=1,column=0, padx=0, pady=(0,10), sticky="se")
+        # self.change_theme.grid(row=1,column=0, padx=0, pady=(0,10), sticky="se")
 
         # Search Frame -----------------------------------------------------------------------------------------
         self.search_frame = ttk.LabelFrame(self.main_frame, text="Busqueda Cliente", padding=(10,10))
