@@ -12,20 +12,27 @@ from src.template.templatePDF import printTemplate
 import tkinter as tk
 from tkinter import ttk, messagebox,Tk
 import subprocess
-import os
+import os, sys
 
 class MyApp:
     def __init__(self, root:Tk):
         self.root = root
         self.root.resizable(False, False)
-        self.root.title('Generador Guias de Despacho')
+        self.root.title('Guias de Despacho')
         self.root.option_add('*tearOff', False)
-        self.root.iconbitmap(os.path.join("src","img","icon.ico"))
+        img_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), "img", "icon.ico")
+        self.root.iconbitmap(img_path)
         # Style 
         self.style = ttk.Style(self.root)
 
-        self.root.tk.call('source', 'theme/forest-dark.tcl')
-        self.root.tk.call('source', 'theme/forest-light.tcl')
+        current_dir = os.path.dirname(__file__)
+        current_theme_path = os.path.dirname(current_dir)
+
+        theme_dark_path = os.path.join(current_theme_path, "theme", "forest-dark.tcl")
+        theme_light_path = os.path.join(current_theme_path, "theme", "forest-light.tcl")
+
+        self.root.tk.call('source', theme_dark_path)
+        self.root.tk.call('source', theme_light_path)
 
         self.style.theme_use('forest-light')
 
@@ -47,7 +54,7 @@ class MyApp:
         self.header_frame = ttk.Frame(self.main_frame, padding=(10,5))
         self.header_frame.grid(row=0, column=0, columnspan=2, padx=(10, 10), pady=(10, 5), sticky="nsew")
 
-        self.label_title = ttk.Label(self.header_frame, text="Generador Plantilla Despacho de Clientes", font=('',15))
+        self.label_title = ttk.Label(self.header_frame, text="Generar Guia Despacho de Cliente", font=('',15))
         self.label_title.grid(row=0,column=0,padx=0,pady=(10,20), sticky="w")
 
         self.change_theme = ttk.Checkbutton(self.header_frame, text="Tema", style="Switch", command=self.changeTheme)
@@ -186,9 +193,14 @@ class MyApp:
 
         pdf = printTemplate(name, phone, address )
         pdf.saveTemplate()
-        path = pdf.path_pdf
-        messagebox.showinfo('Success', 'PDF Generado Exitosamente')
-        subprocess.Popen([path], shell=True)
+        path = os.path.join(pdf.path_pdf)
+        print("file path route pdf: "+ path)
+        if pdf:
+            messagebox.showinfo('Success', 'PDF Generado Exitosamente')
+        else:
+            messagebox.showerror('Warning', "Ocurrio un error!")
+        
+        subprocess.Popen(["start", path], shell=True)
 
     def changeTheme(self):
         currentTheme = self.style.theme_use()    

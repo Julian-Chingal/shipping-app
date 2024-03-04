@@ -3,7 +3,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 import json
-import os
+import os, sys
 
 class printTemplate():
     def __init__(self, name, phone, address):
@@ -12,10 +12,15 @@ class printTemplate():
         self.address = address
 
         # Files Path
-        current_path = os.path.abspath(os.path.join(os.path.dirname(__file__),".."))
-        self.path_pdf = os.path.join(current_path, "template", "template.pdf")
-        self.fileJson = os.path.join(current_path, "Data", "company_config.json")
-        self.image = os.path.join(current_path,"img", "logo.png")
+        current_path = getattr(sys, '_MEIPASS', os.path.abspath(os.path.join(os.path.dirname(__file__), "..\\..")))
+        print(current_path)
+        self.path_pdf = os.path.join(current_path,"src", "template", "template.pdf")
+        self.fileJson = os.path.join(current_path, "src", "data", "company_config.json")
+        self.image = os.path.join(current_path, "src", "img", "logo.png")
+
+        # self.path_pdf = os.path.join("src/template/template.pdf")
+        # self.fileJson = os.path.join("src/data/company_config.json")
+        # self.image = os.path.join("src/img/logo.png")
 
         # Sheet size config
         self.half_letter = (letter[0], letter[1] / 2)
@@ -31,6 +36,8 @@ class printTemplate():
         company = self.extractCompanyInfo()
 
         # Company Info
+        c.drawString(70, 350, "Remitente:")
+        c.line(70,345, 150,345)
         c.drawString(70, 320, company["name"]) 
         c.drawString(70, 300, "Tel: " + company["phone"]) 
         c.drawString(70, 280, company["address"]) 
@@ -64,5 +71,5 @@ class printTemplate():
         c.save()
         
 
-pdf = printTemplate("juan Perez de la  communicacion olla S.A.S","1233516", "barrio paraiso \n Pepe perez")
-pdf.saveTemplate()
+# pdf = printTemplate("juan Perez de la  communicacion olla S.A.S","1233516", "barrio paraiso \n Pepe perez")
+# pdf.saveTemplate()

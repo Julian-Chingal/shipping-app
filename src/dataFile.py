@@ -1,11 +1,11 @@
 import pandas  as pd
 from difflib import get_close_matches as gcm
-import os
+import os, sys
 
 def readData():
-    current_path = os.path.abspath(os.path.join(os.path.dirname(__file__),".."))
-    file_path = os.path.join(current_path,"src","Data", "Clientes.xlsx")
-    print(file_path)
+    current_path = getattr(sys, '_MEIPASS', os.path.abspath(os.path.join(os.path.dirname(__file__), "..\\.")))
+    file_path = os.path.join(current_path, "src","data", "Clientes.xlsx")
+    # file_path = os.path.join("src/data/Clientes.xlsx")
     file = pd.read_excel(file_path)
 
     return file
