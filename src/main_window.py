@@ -9,10 +9,11 @@ editar sus detalles y generar plantillas de despacho de clientes en formato PDF.
 """
 from src.dataFile import findClient, readData
 from src.template.templatePDF import printTemplate
+from src.get_info import updateInfo
 import tkinter as tk
 from tkinter import ttk, messagebox,Tk
 import subprocess
-import os, sys
+import os
 
 class MyApp:
     def __init__(self, root:Tk):
@@ -52,7 +53,7 @@ class MyApp:
     def setup_ui(self):
         # Header Frame -----------------------------------------------------------------------------------------
         self.header_frame = ttk.Frame(self.main_frame, padding=(10,5))
-        self.header_frame.grid(row=0, column=0, columnspan=2, padx=(10, 10), pady=(10, 5), sticky="nsew")
+        self.header_frame.grid(row=0, column=0, padx=(10, 10), pady=(10, 5), sticky="nsew")
 
         self.label_title = ttk.Label(self.header_frame, text="Generar Guia Despacho de Cliente", font=('',15))
         self.label_title.grid(row=0,column=0,padx=0,pady=(10,20), sticky="w")
@@ -80,12 +81,15 @@ class MyApp:
         self.btn_add = ttk.Button(self.search_frame, text="Editar", state="disabled", command=self.inserClient)
         self.btn_add.grid(row=0, column=2, padx=(0,5), pady=(0,10), sticky="nsew")
 
+        self.btn_update = ttk.Button(self.search_frame, text="Actualizar", style="Accent.TButton", command=self.updateClients)
+        self.btn_update.grid(row=0, column=3, padx=(0,5), pady=(0,10), sticky="nsew")
+
         #Tree
-        self.tree_clients = ttk.Treeview(self.search_frame, columns=('Nombre', 'Telefono', 'Direccion'), show='headings')
+        self.tree_clients = ttk.Treeview(self.search_frame, columns=('Nombre', 'Telefono', 'Ciudad'), show='headings')
         self.tree_clients.heading('Nombre', text="Nombre")
         self.tree_clients.heading('Telefono', text="Telefono")
-        self.tree_clients.heading('Direccion', text="Direccion")
-        self.tree_clients.grid(row=1, column=0, columnspan=3, padx=(5,0), pady=(10,0), sticky="nsew")
+        self.tree_clients.heading('Ciudad', text="Ciudad")
+        self.tree_clients.grid(row=1, column=0, columnspan=4, padx=(5,0), pady=(10,0), sticky="nsew")
 
         # Template Frame -----------------------------------------------------------------------------------------
         self.template_frame = ttk.LabelFrame(self.main_frame, text="Plantilla", padding=(10,10))
@@ -99,41 +103,48 @@ class MyApp:
         self.template_frame.rowconfigure(6, weight=0)  # Mantener el alto fijo del botón
 
         # Name
-        self.label_name = ttk.Label(self.template_frame, text="Nombre del Cliente")
+        self.label_name = ttk.Label(self.template_frame, text="Nombre")
         self.label_name.grid(row=0, column=0, padx=3, pady=(0,1), sticky="w")
 
         self.entry_name_info = ttk.Entry(self.template_frame)
         self.entry_name_info.grid(row=1, column=0, padx=5, pady=(0,10), sticky="ew")
 
         # Phone
-        self.label_phone = ttk.Label(self.template_frame, text="Telefono del Cliente")
+        self.label_phone = ttk.Label(self.template_frame, text="Teléfono")
         self.label_phone.grid(row=2, column=0, padx=3, pady=(0,1), sticky="w")
 
         self.entry_phone_info = ttk.Entry(self.template_frame)
         self.entry_phone_info.grid(row=3, column=0, padx=5, pady=(0,10), sticky="ew")
 
+        # ID
+        self.label_id = ttk.Label(self.template_frame, text= "Identificacion")
+        self.label_id.grid(row=0, column=1 , padx=4 , pady=(0,1), sticky="w")
+
+        self.entry_id = ttk.Entry(self.template_frame)
+        self.entry_id.grid(row=1,column=1, padx=5, pady=(0,10), sticky="ew")
+
         # City
         self.label_city_info = ttk.Label(self.template_frame, text= "Ciudad")
-        self.label_city_info.grid(row=0, column=1, padx=4, pady=(0,1), sticky="w")
+        self.label_city_info.grid(row=2, column=1, padx=4, pady=(0,1), sticky="w")
 
         self.entry_city_info = ttk.Entry(self.template_frame)
-        self.entry_city_info.grid(row=1, column=1, padx=5,pady=(0,10),  sticky="ew")
+        self.entry_city_info.grid(row=3, column=1, padx=5,pady=(0,10),  sticky="ew")
 
         # Select
         self.check = tk.BooleanVar(value=False)
         self.pickUpOffice = ttk.Checkbutton(self.template_frame, text="Oficina?", variable= self.check)
-        self.pickUpOffice.grid(row=3, column=1, padx=4, pady=(0,10) , sticky="nsew")
+        self.pickUpOffice.grid(row=4, column=0, columnspan=2, padx=4, pady=(0,10) , sticky="nsew")
 
         # Address
-        self.label_address = ttk.Label(self.template_frame, text="Direccion del Cliente")
-        self.label_address.grid(row=4, column=0, padx=3, pady=(0,1), sticky="w")
+        self.label_address = ttk.Label(self.template_frame, text="Dirección")
+        self.label_address.grid(row=5, column=0, padx=3, pady=(0,1), sticky="w")
 
         self.txt_address_info = tk.Text(self.template_frame, height=6, width= 7 ,wrap='word')
-        self.txt_address_info.grid(row=5, column=0,columnspan=2, padx=6, pady=(0,20), sticky="ew")
+        self.txt_address_info.grid(row=6, column=0,columnspan=2, padx=6, pady=(0,20), sticky="ew")
 
         # Button
         self.btn_impr = ttk.Button(self.template_frame, text="Imprimir",state="disabled", command=self.printGuide, style="Accent.TButton", width=10)
-        self.btn_impr.grid(row=6, column=0 , padx=4, columnspan=2,  pady=(0,10), sticky="nsew")
+        self.btn_impr.grid(row=7, column=0 , padx=4, columnspan=2,  pady=(0,10), sticky="nsew")
 
         # Footer Frame -----------------------------------------------------------------------------------------
         self.footer_frame = ttk.Frame(self.main_frame, padding=(10,5))
@@ -157,10 +168,6 @@ class MyApp:
     def showClient(self):
         client = self.findEntry.get()
         suggestion = findClient(client)
-        
-        if not client:
-            self.showAllClient()
-            return
 
         if not suggestion:
             messagebox.showinfo('Error', 'Cliente no encontrado')
@@ -171,21 +178,16 @@ class MyApp:
         else:
             self.tree_clients.delete(*self.tree_clients.get_children())
             for info in suggestion:
-                self.tree_clients.insert('','end', values=info)
+                self.tree_clients.insert('','end', values=(info[0], info[2], info[4], *info))
             
             self.btn_add.config(state="normal")
-         
-    def showAllClient(self):
-        data = readData()
-        self.tree_clients.delete(*self.tree_clients.get_children()) #Limpiar antes de poner informacion
-        for info in data:
-            self.tree_clients.insert('', 'end', values=info)
 
     def inserClient(self):
         select = self.tree_clients.selection()
         
         # Clear boxes
         self.entry_name_info.delete(0, 'end')
+        self.entry_id.delete(0, 'end')
         self.entry_phone_info.delete(0, 'end')
         self.txt_address_info.delete(1.0, 'end')
         self.entry_city_info.delete(0, 'end')
@@ -194,17 +196,20 @@ class MyApp:
             item = self.tree_clients.item(select)
             values = item['values']
             self.entry_name_info.insert(0, values[0])
+            self.entry_id.insert(0, values[4])
             self.entry_phone_info.insert(0, values[1])
-            self.txt_address_info.insert(1.0, values[2])
+            self.txt_address_info.insert(1.0, values[6])
+            self.entry_city_info.insert(0, values[2])
             self.btn_impr.config(state="normal")
 
     def printGuide(self):
         name = self.entry_name_info.get()
+        id_client = self.entry_id.get()
         phone = self.entry_phone_info.get()
         address = self.txt_address_info.get("1.0", tk.END).strip() 
         city = self.entry_city_info.get()
 
-        pdf = printTemplate(name, phone, address, city )
+        pdf = printTemplate(name, id_client, phone, address, city )
         pdf.saveTemplate(self.check.get())
 
         path = os.path.join(pdf.path_pdf)
@@ -215,6 +220,13 @@ class MyApp:
             messagebox.showerror('Warning', "Ocurrio un error!")
         
         subprocess.Popen(["start", path], shell=True)
+
+    def updateClients(self):
+        info = updateInfo()
+        if info:
+            messagebox.showinfo("Success", "Lista de clientes actualizada")
+        else:
+            messagebox.showerror("Error", "No se pudo actualizar la lista de clientes")
 
     def changeTheme(self):
         currentTheme = self.style.theme_use()    

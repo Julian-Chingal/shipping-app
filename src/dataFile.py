@@ -7,7 +7,6 @@ def readData():
     file_path = os.path.join(current_path, "src","data", "Clientes.xlsx")
     # file_path = os.path.join("src/data/Clientes.xlsx")
     file = pd.read_excel(file_path)
-
     return file
 
 def findClient(clientName):
@@ -17,12 +16,12 @@ def findClient(clientName):
     # Return the client idf the name is in the list
     if clientName in clients:
         client_info = file[file['Nombre'] == clientName].iloc[0]
-        return [client_info['Nombre'], client_info['Telefono'], client_info['Direccion']]
+        return [client_info['Nombre'], client_info['Identificacion'], client_info['Telefono'], client_info['Direccion'], client_info['Ciudad']]
     
     # Return the closest clients if the name is not in the list
-    suggestion = gcm(clientName, clients, n=5, cutoff=0.6)
+    suggestion = gcm(clientName, clients, n=6, cutoff=0.6)
     suggestion_info = []
     for suggest in suggestion:
         client_info = file[file['Nombre'] == suggest].iloc[0]
-        suggestion_info.append([client_info['Nombre'], client_info['Telefono'], client_info['Direccion']])
+        suggestion_info.append([client_info['Nombre'], client_info['Identificacion'], client_info['Telefono'], client_info['Direccion'], client_info['Ciudad']])
     return suggestion_info

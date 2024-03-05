@@ -1,23 +1,18 @@
-import requests
+import gdown
 import os, sys
 
 # Variables
-url_online = ""
+url =  "https://docs.google.com/spreadsheets/d/1XjTytSq-7bnvrtk3sLuDgbzSVmMtM4pX/edit?usp=drive_link&ouid=113043754513403743529&rtpof=true&sd=true"
+file_id = url.split('/')[-2]
 
 current_path = getattr(sys, '_MEIPASS', os.path.abspath(os.path.join(os.path.dirname(__file__), "..\\.")))
 file_path = os.path.join(current_path, "src","data", "Clientes.xlsx")
 
-def descargar_archivo_desde_onedrive(url, ruta_local):
+def updateInfo():
+    prefix = 'https://drive.google.com/uc?/export=download&id='
+    c = prefix+file_id
     try:
-        # Realiza la solicitud HTTP para descargar el archivo
-        response = requests.get(url)
-        response.raise_for_status()  # Verifica si la descarga fue exitosa
-
-        # Guarda el contenido en un archivo local
-        with open(ruta_local, 'wb') as archivo_local:
-            archivo_local.write(response.content)
-
-        print(f"Archivo descargado correctamente en {ruta_local}")
-    except Exception as e:
-        print(f"Error al descargar el archivo: {e}")
-
+        gdown.download(c, output=file_path)
+        return True
+    except:
+        return False
