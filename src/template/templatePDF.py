@@ -39,7 +39,7 @@ class printTemplate():
 
         # Company Info
         c.drawString(60, 750, "Remitente:")
-        c.line(60,747, 150,747)
+        c.line(60,747, 135,747)
         c.drawString(60, 730, company["name"]) 
         c.drawString(60, 710, "Tel: " + company["phone"]) 
         c.drawString(60, 690, company["address"]) 
@@ -48,7 +48,7 @@ class printTemplate():
         # c.drawInlineImage(self.image, x=100, y=350, width=100, height=50, preserveAspectRatio=True)
         # c.rect(x=100, y=500, width=100, height=50, stroke=1, fill=0)
 
-        c.line(70,665, 200, 665)
+        c.line(60,665, 200, 665)
 
         # Client Info
         c.setFont("BookAntiqua-Bold", 14) 
