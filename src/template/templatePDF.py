@@ -93,7 +93,7 @@ class printTemplate():
 
         c.setFont("BookAntiqua", 15) 
         c.drawString(250, 603, self.name) 
-        c.drawString(250, 566, "117551679")
+        c.drawString(250, 566, self.id_client)
         c.drawString(250, 529, self.phone) 
         c.drawString(250, 493, "EL CLIENTE RECIBE EN OFICINA")
         c.drawString(250, 476, self.city)

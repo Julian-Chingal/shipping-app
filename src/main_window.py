@@ -153,10 +153,13 @@ class MyApp:
         self.label_signature = ttk.Label(self.footer_frame, text="POWERED BY Julian Chingal", font=('',10), foreground="gray")
         self.label_signature.grid(row=0,column=0,padx=0,pady=(2,0), sticky="e")
 
-        # Configurar el envasado de los frames
+        # Configure the packing of the frames
         self.root.pack_propagate(False)
         self.main_frame.pack_propagate(False)
         # self.center_window()
+
+        # Enter key bind
+        self.findEntry.bind('<Return>', lambda event: self.showClient())
 
     def center_window(self):
         self.root.update()
@@ -166,7 +169,7 @@ class MyApp:
         self.root.geometry("+{}+{}".format(x_cordinate, y_cordinate))
 
     def showClient(self):
-        client = self.findEntry.get()
+        client = self.findEntry.get().upper()
         suggestion = findClient(client)
 
         if not suggestion:
