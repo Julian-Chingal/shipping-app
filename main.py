@@ -1,10 +1,15 @@
-from tkinter import Tk
-from src.main_window import MyApp
+import sys
+from src.window import MainWindow
+from PySide2 import QtWidgets
 
 def main():
-    root = Tk()
-    app = MyApp(root)
-    root.mainloop()
+    app = QtWidgets.QApplication([])
+
+    window = MainWindow()
+    window.setWindowTitle("Mi Aplicación")
+    window.show()
+
+    sys.exit(app.exec_())
 
 if __name__ == "__main__":
     main()
