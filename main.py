@@ -1,5 +1,5 @@
 import sys
-from src.window import MainWindow
+from src.views.main_window import MainWindow
 # from src.window_pru import MainWindow
 from PySide2 import QtWidgets, QtGui
 
@@ -10,7 +10,7 @@ def main():
     window.setWindowTitle("Guias App")
     window.resize(600, 500)
 
-    icon = QtGui.QIcon('src/public/icon.png')
+    icon = QtGui.QIcon('src/public/img/icon.png')
     window.setWindowIcon(icon)
     window.show()
 

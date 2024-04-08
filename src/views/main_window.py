@@ -1,5 +1,9 @@
 from PySide2 import QtCore, QtWidgets, QtGui
+import functools
+
 from src.data.dataFile import searchClientByName
+from src.views.edit_window import EditWindow
+from src.views.print_window import PrintWindow
 
 class MainWindow(QtWidgets.QWidget):
     def __init__(self):
@@ -11,7 +15,7 @@ class MainWindow(QtWidgets.QWidget):
         header_layout = QtWidgets.QGridLayout()
         
         logo_label = QtWidgets.QLabel()
-        logo_label.setPixmap(QtGui.QPixmap("src\public\logo.png"))  # Ruta a la imagen del logo
+        logo_label.setPixmap(QtGui.QPixmap("src\public\img\logo.png"))  # Ruta a la imagen del logo
         logo_label.setAlignment(QtCore.Qt.AlignLeft)
 
         self.title_label = QtWidgets.QLabel("Generar Ruta de Envio")
@@ -57,7 +61,6 @@ class MainWindow(QtWidgets.QWidget):
 
         footer_layout.addWidget(footer_label, 0, 0)
 
-
         #! Main layout
         main_layout = QtWidgets.QGridLayout(self)
         main_layout.addLayout(header_layout, 0, 0, 1, 2)  # Encabezado ocupa dos columnas
@@ -74,13 +77,27 @@ class MainWindow(QtWidgets.QWidget):
     @QtCore.Slot()
     def edit_client(self, name):
         # Lógica para modificar clientes
-        print("Modificando cliente..." , name)
+        result = searchClientByName(name)
+        editDialog = EditWindow(result, self)
+        
+        if editDialog.exec_() == QtWidgets.QDialog.Accepted:
+            # Si se aceptan los cambios en la ventana emergente, puedes realizar alguna acción
+            print("Cambios guardados")
+        else:
+            print("Edición cancelada")
 
     @QtCore.Slot()
     def print_client(self, name):
-        print("imprimiendo cliente..." , name)
+        # Lógica para modificar clientes
+        result = searchClientByName(name)
+        printDialog = PrintWindow(result, self)
 
-    
+        if printDialog.exec_() == QtWidgets.QDialog.Accepted:
+            # Si se aceptan los cambios en la ventana emergente, puedes realizar alguna acción
+            print("imprimiendo guardados")
+        else:
+            print("impresion cancelada")
+
     @QtCore.Slot()
     def search_client(self):
         # Lógica para buscar clientes
@@ -92,19 +109,18 @@ class MainWindow(QtWidgets.QWidget):
             QtWidgets.QMessageBox.information(self, "Cliente no encontrado", "No se encontraron clientes con el nombre especificado.")
             self.search_edit.clear()
 
-    
     def update_table(self, clients):
         # Limpiar contenido
         self.table.clearContents() 
 
         # Crear botones
         edit_button = QtWidgets.QPushButton()
-        edit_button.setIcon(QtGui.QIcon("src/public/edit.png")) 
+        edit_button.setIcon(QtGui.QIcon("src/public/img/edit.png")) 
         edit_button.setIconSize(QtCore.QSize(24, 24))  
         edit_button.setFixedSize(30, 30)
 
         print_button = QtWidgets.QPushButton()  
-        print_button.setIcon(QtGui.QIcon("src/public/print.png"))  
+        print_button.setIcon(QtGui.QIcon("src/public/img/print.png"))  
         print_button.setIconSize(QtCore.QSize(24, 24)) 
         print_button.setFixedSize(30, 30)
 
@@ -130,20 +146,8 @@ class MainWindow(QtWidgets.QWidget):
         
             self.table.setCellWidget(row, 3, widget_container)
 
-            # Conectar los botones a los métodos correspondientes
-            edit_btn_clone.clicked.connect(lambda:  self.edit_client(client["name"]))
-            print_btn_clone.clicked.connect(lambda : self.print_client(client["name"]))
-
-    def tableItemChanged(self):
-        selected_items = self.table.selectedItems()
-        if selected_items:
-            row = selected_items[0].row()
-            name = self.table.item(row, 0).text()
-            vat = self.table.item(row, 1).text()
-            city = self.table.item(row, 2).text()
-            phone = self.table.item(row, 3).text()
-            print(name, vat, city, phone)
-            # self.show_client_details(name, vat, city, phone)
+            edit_btn_clone.clicked.connect(functools.partial(self.edit_client, client["name"]))
+            print_btn_clone.clicked.connect(functools.partial(self.print_client, client["name"]))
     
     def clone_button(self, button):
         new_button = QtWidgets.QPushButton(button.text())
@@ -156,7 +160,12 @@ class MainWindow(QtWidgets.QWidget):
                 background-color: transparent;
                 border: none;
                 border-radius: 5px;
-            }""")
+            }
+            
+            QPushButton:hover {
+            background-color:  #FFFFFF;
+            }
+            """)
         return new_button
 
     def apply_style(self):
@@ -182,7 +191,7 @@ class MainWindow(QtWidgets.QWidget):
             QLineEdit{
                 background-color: #f0f0f0;
                 border: 1px solid gray;
-                border-radius: 12px;
+                border-radius: 10px;
                 padding: 7px;
                 color: black;  /* Color del texto en QLineEdit */
             }
@@ -220,15 +229,7 @@ class MainWindow(QtWidgets.QWidget):
             }
         """
 
-        # Table
-        self.table.setStyleSheet(widget_style)
+        self.setStyleSheet(widget_style)
 
         # Labels
         self.title_label.setStyleSheet(label_style)
-
-        # Inputs
-        self.search_edit.setStyleSheet(widget_style)
-        
-        # Buttons
-        self.search_button.setStyleSheet(widget_style)
-        self.search_button_update.setStyleSheet(widget_style)

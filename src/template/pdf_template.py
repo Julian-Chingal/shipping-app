@@ -1,20 +1,21 @@
 from reportlab.pdfgen import canvas
 from fpdf import FPDF
-import sys, os, json, datetime, textwrap
+import sys, os, json, datetime, textwrap, subprocess
 
 class PrintTemplate():
-    def __init__(self, name, id_client, phone, address, city):
+    def __init__(self, name, id_client, phone, address, city, state):
         self.name = name
         self.id_client = id_client
         self.phone = phone
         self.address = address
         self.city = city
+        self.state = state
 
         # Ruta de archivos
         current_path = getattr(sys, '_MEIPASS', os.path.abspath(os.path.join(os.path.dirname(__file__), "..\\..")))
         self.path_pdf = os.path.join(current_path, "src", "template", "template.pdf")
         self.fileJson = os.path.join(current_path, "src", "data", "company_config.json")
-        self.image = os.path.join(current_path, "src", "img", "logo.png") 
+        self.image = os.path.join(current_path, "src", "public", "img", "logo.png") 
 
     def extract_company_info(self):
         with open(self.fileJson, "r") as archivo:
@@ -22,7 +23,7 @@ class PrintTemplate():
         return company_info
 
     def header(self, pdf):
-        pdf.image("src/public/logo.png", 7, 8, 48, 14)
+        pdf.image("src/public/img/logo.png", 7, 8, 48, 14)
         pdf.set_font('Helvetica', 'B', 16)
         pdf.set_xy(150, 5)
         pdf.set_text_color(220, 220, 220)
@@ -63,12 +64,18 @@ class PrintTemplate():
         pdf.set_font('helvetica', 'B', 15)
         pdf.cell(text = "Telefono:", new_x= "LEFT",new_y = "NEXT", align = 'L')
         pdf.set_font('helvetica', '', 15)
-        pdf.cell(text = self.phone, new_x= "LEFT",new_y = "NEXT", align = 'L')
+        if self.phone:
+            pdf.cell(text=self.phone, new_x="LEFT", new_y="NEXT", align='L')
+
+        pdf.set_font('helvetica', 'B', 15)
+        pdf.cell(text = "Ciudad:", new_x= "LEFT",new_y = "NEXT", align = 'L')
+        pdf.set_font('helvetica', '', 15)
+        pdf.multi_cell(0, text=self.ajustar_texto(self.city + " - "+  self.state , 40),new_x= "LEFT",new_y = "NEXT", align='L')
 
         pdf.set_font('helvetica', 'B', 15)
         pdf.cell(text = "Direccion:", new_x= "LEFT",new_y = "NEXT", align = 'L')
         pdf.set_font('helvetica', '', 15)
-        pdf.multi_cell(0, text=self.ajustar_texto(self.address, 40),new_x= "LEFT",new_y = "NEXT", align='L')
+        pdf.multi_cell(0, text=self.ajustar_texto(self.address, 25),new_x= "LEFT",new_y = "NEXT", align='L')
 
     def ajustar_texto(self, text, max_width):
         wrapper = textwrap.TextWrapper(width= max_width)
@@ -81,6 +88,7 @@ class PrintTemplate():
         pdf.add_page()
         self.create_template(pdf)
         pdf.output(self.path_pdf)
+        subprocess.Popen([self.path_pdf], shell=True) #por ahora se abre directamente el pdf
 
 # pdf = PrintTemplate("ATINA ENERGY SERVICES CORP SUCURSAL COLOMBIA","1233516", "3220215569","Barrio Paraiso  Pepe perez", "BOGOTA")
 # # pdf = PrintTemplate("SUCURSAL COLOMBIA","1233516", "3220215569","Barrio Paraiso  Pepe perez", "BOGOTA")
