@@ -1,38 +1,42 @@
-import requests
-import os, sys
+import os, sys, json
 
-# Variables
-url = "https://docs.google.com/spreadsheets/d/1XjTytSq-7bnvrtk3sLuDgbzSVmMtM4pX/edit?usp=drive_link&ouid=113043754513403743529&rtpof=true&sd=true"
-file_id = url.split('/')[-2]
+def readData():
+    current_path = getattr(sys, '_MEIPASS', os.path.abspath(os.path.join(os.path.dirname(__file__), "..\\.")))
+    file_path = os.path.join(current_path, "data", "clientList.json")
+    
+    # Verificar si el archivo existe
+    if not os.path.exists(file_path):
+        print("El archivo JSON no existe:", file_path)
+        return None
 
-current_path = getattr(sys, '_MEIPASS', os.path.abspath(os.path.join(os.path.dirname(__file__), "..\\.")))
-file_path = os.path.join(current_path, "src", "data", "Clientes.xlsx")
-
-def updateInfo():
-    # Retrieve the download URL using the file ID
-    download_url = f"https://drive.google.com/uc?export=download&id={file_id}"
-
+    # Intentar leer el archivo JSON
     try:
-        # Send the GET request to download the file
-        response = requests.get(download_url, stream=True)
+        with open(file_path, 'r',  encoding='utf-8') as file:
+            data = json.load(file)
+            del data["status"]
+        return data
 
-        if response.status_code == 200:
-            # Check for successful download
-            with open(file_path, 'wb') as f:
-                for chunk in response.iter_content(1024):
-                    f.write(chunk)
-            print("Descarga exitosa!!")
-            return True
-        else:
-            print(f"Failed to download file: {response.status_code}")
-            return False
+    except Exception as e:
+        print("Error al leer el archivo JSON:", e)
+        return None
 
-    except requests.exceptions.RequestException as e:
-        print(f"Error downloading file: {e}")
-        return False
+def searchClientByName(search_term):
+    # Obtener los datos del JSON
+    clients_data = readData()
 
-# if __name__ == "__main__":
-#     if updateInfo():
-#         print("File downloaded successfully!")
-#     else:
-#         print("Failed to download file.")
+    if clients_data is None:
+        return None
+
+    # Lista para almacenar los clientes que coinciden con el término de búsqueda
+    matching_clients = []
+
+    # Iterar sobre los clientes y buscar coincidencias por nombre
+    for client in clients_data["data"]:
+        client_name = client["name"]
+        if search_term.lower() in client_name.lower():  # Buscar coincidencias (ignorar mayúsculas/minúsculas)
+            matching_clients.append(client)
+
+    return matching_clients
+
+
+# print(searchClientByName("3m"))

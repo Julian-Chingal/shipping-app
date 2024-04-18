@@ -1,21 +1,42 @@
-from PySide2 import QtCore, QtWidgets, QtGui
-import functools
+from PySide2 import QtCore, QtWidgets, QtGui 
+import functools, sys, os
 
-from src.data.dataFile import searchClientByName
+from src.data.get_info import searchClientByName
+from src.data.update_info import  updateInfo
 from src.views.edit_window import EditWindow
 from src.views.print_window import PrintWindow
+
 
 class MainWindow(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
         self.setup_ui()
+        
 
     def setup_ui(self):
+        self.path = getattr(sys, '_MEIPASS', os.path.abspath(os.path.join(os.path.dirname(__file__), "..\\.")))     
+
+        #! ToolBar
+        self.toolbar = QtWidgets.QToolBar()
+        self.toolbar.setMovable(False) 
+                                            # Establece un color de fondo para la barra de herramientas
+        
+        archivo_menu = QtWidgets.QMenu("Archivo", self)  # Crear un menú desplegable
+        archivo_menu.addAction("Abrir")
+        archivo_menu.addAction("Guardar")
+        archivo_menu.addAction("Salir")
+
+        archivo_button = QtWidgets.QToolButton()  # Crear un botón de herramienta
+        archivo_button.setText("Archivo")
+        archivo_button.setMenu(archivo_menu)  # Asignar el menú al botón
+
+        self.toolbar.addWidget(archivo_button)  
+
         #! Header
         header_layout = QtWidgets.QGridLayout()
         
         logo_label = QtWidgets.QLabel()
-        logo_label.setPixmap(QtGui.QPixmap("src\public\img\logo.png"))  # Ruta a la imagen del logo
+        logo_label.setPixmap(QtGui.QPixmap(os.path.join(self.path, "public", "img", "logo.png")))  # Ruta a la imagen del logo
         logo_label.setAlignment(QtCore.Qt.AlignLeft)
 
         self.title_label = QtWidgets.QLabel("Generar Ruta de Envio")
@@ -61,11 +82,13 @@ class MainWindow(QtWidgets.QWidget):
 
         footer_layout.addWidget(footer_label, 0, 0)
 
-        #! Main layout
+        #! Main layout      
         main_layout = QtWidgets.QGridLayout(self)
-        main_layout.addLayout(header_layout, 0, 0, 1, 2)  # Encabezado ocupa dos columnas
-        main_layout.addLayout(search_layout, 1, 0)
-        main_layout.addLayout(footer_layout, 2, 0, 1,2)
+        main_layout.addWidget(self.toolbar, 0, 0)  # Agrega la barra de herramientas al layout
+        main_layout.addLayout(header_layout, 1, 0, 1, 2)  # Encabezado ocupa dos columnas
+        main_layout.addLayout(search_layout, 2, 0)
+        main_layout.addLayout(footer_layout, 3, 0, 1,2)
+        
 
         #! Styles
         self.apply_style()
@@ -74,29 +97,30 @@ class MainWindow(QtWidgets.QWidget):
         self.search_button.clicked.connect(self.search_client)
         self.search_edit.returnPressed.connect(self.search_client) 
 
+        self.search_button_update.clicked.connect(self.update_info)
+        
     @QtCore.Slot()
     def edit_client(self, name):
-        # Lógica para modificar clientes
         result = searchClientByName(name)
         editDialog = EditWindow(result, self)
         
         if editDialog.exec_() == QtWidgets.QDialog.Accepted:
-            # Si se aceptan los cambios en la ventana emergente, puedes realizar alguna acción
+
             print("Cambios guardados")
         else:
             print("Edición cancelada")
 
     @QtCore.Slot()
     def print_client(self, name):
-        # Lógica para modificar clientes
         result = searchClientByName(name)
-        printDialog = PrintWindow(result, self)
+        PrintWindow(result, self)
+        # printDialog = PrintWindow(result, self)
 
-        if printDialog.exec_() == QtWidgets.QDialog.Accepted:
-            # Si se aceptan los cambios en la ventana emergente, puedes realizar alguna acción
-            print("imprimiendo guardados")
-        else:
-            print("impresion cancelada")
+        # if printDialog.exec_() == QtWidgets.QDialog.Accepted:
+
+        #     print("imprimiendo guardados")
+        # else:
+        #     print("impresion cancelada")
 
     @QtCore.Slot()
     def search_client(self):
@@ -109,18 +133,24 @@ class MainWindow(QtWidgets.QWidget):
             QtWidgets.QMessageBox.information(self, "Cliente no encontrado", "No se encontraron clientes con el nombre especificado.")
             self.search_edit.clear()
 
+    def update_info(self):
+        if updateInfo():
+             QtWidgets.QMessageBox.information(self, "Actualizando", "Se ha actualizado la informacion")
+        else:
+            QtWidgets.QMessageBox.warning(self, "Actualizando", "Se ha actualizado la informacion")
+
     def update_table(self, clients):
         # Limpiar contenido
         self.table.clearContents() 
 
         # Crear botones
         edit_button = QtWidgets.QPushButton()
-        edit_button.setIcon(QtGui.QIcon("src/public/img/edit.png")) 
+        edit_button.setIcon(QtGui.QIcon(os.path.join(self.path, "public", "img", "edit.png"))) 
         edit_button.setIconSize(QtCore.QSize(24, 24))  
         edit_button.setFixedSize(30, 30)
 
         print_button = QtWidgets.QPushButton()  
-        print_button.setIcon(QtGui.QIcon("src/public/img/print.png"))  
+        print_button.setIcon(QtGui.QIcon(os.path.join(self.path, "public", "img","print.png")))  
         print_button.setIconSize(QtCore.QSize(24, 24)) 
         print_button.setFixedSize(30, 30)
 
@@ -226,6 +256,14 @@ class MainWindow(QtWidgets.QWidget):
             QTableWidget::item:selected {
                 background-color: #118F31;
                 color: white;
+            }
+
+            QToolBar {
+                background-color: #f9f0f1; 
+                color: white;  /* Color del texto */
+                font-size: 14px;  /* Tamaño de fuente */
+                font-family: sans-serif;  /* Fuente */
+                padding: 5px;
             }
         """
 

@@ -1,4 +1,4 @@
-from PySide2 import QtWidgets, QtCore
+from PySide2 import QtWidgets, QtCore, QtGui
 from src.template.pdf_template import PrintTemplate
 
 class EditWindow(QtWidgets.QDialog):
@@ -39,6 +39,11 @@ class EditWindow(QtWidgets.QDialog):
         address_label = QtWidgets.QLabel("Direccion:")
         self.address_edit = QtWidgets.QTextEdit()
 
+        #* Checkbox
+        self.check_box = QtWidgets.QCheckBox("Recoge en oficina?")
+        self.check_box.setChecked(False)
+        self.check_box.stateChanged.connect(self.toggle_office_text)
+
         # Botones
         save_button = QtWidgets.QPushButton("Imprimir")
         cancel_button = QtWidgets.QPushButton("Cancelar")
@@ -59,6 +64,7 @@ class EditWindow(QtWidgets.QDialog):
 
         self.main_layout.addWidget(state_label,5 ,0)
         self.main_layout.addWidget(self.state_edit,6 ,0)
+        self.main_layout.addWidget(self.check_box, 6, 1)
         self.main_layout.addWidget(address_label,7 ,0)
         self.main_layout.addWidget(self.address_edit, 8, 0, 1, 2)
 
@@ -82,7 +88,7 @@ class EditWindow(QtWidgets.QDialog):
         for attr in attributes:
             value = client.get(attr)
             if value is False:
-                setattr(self, attr, "")
+                setattr(self, attr, "None")
             else:
                 setattr(self, attr, value)
 
@@ -94,13 +100,32 @@ class EditWindow(QtWidgets.QDialog):
         self.address_edit.setText(self.street)
 
     def save_changes(self):
-        pdf = PrintTemplate(self.name_edit.text(), self.id_edit.text(), self.phone_edit.text(), self.address_edit.toPlainText(), self.city_edit.text(), self.state_edit.text())
+        data = {
+            "name": self.name_edit.text(),
+            "id": self.id_edit.text(),
+            "phone": self.phone_edit.text(),
+            "city": self.city_edit.text(),
+            "state": self.state_edit.text(),
+            "address": self.address_edit.toPlainText()
+        }
+        
+        pdf = PrintTemplate(data)
+        
         if pdf:
             QtWidgets.QMessageBox.information(self, "Cliente editado", "Imprimiendo guia de envio")
             pdf.save()
             self.accept()
         else:
             QtWidgets.QMessageBox.critical(self, "Error", "Ha ocurrido un error al imprimir la guia")
+
+    def toggle_office_text(self, state):
+        if state == QtCore.Qt.Checked:
+            self.address_edit.append("EL CLIENTE RECOGE EN OFICINA")
+        else:
+            cursor = self.address_edit.textCursor()
+            cursor.movePosition(QtGui.QTextCursor.End)
+            cursor.select(QtGui.QTextCursor.LineUnderCursor)
+            cursor.removeSelectedText()
 
     def styles(self):
         title_style = """
@@ -112,6 +137,7 @@ class EditWindow(QtWidgets.QDialog):
                 }
         """
                 # 
+
 
         style = """
       
@@ -135,8 +161,29 @@ class EditWindow(QtWidgets.QDialog):
                 background-color: #e0ffe0; 
             }
 
+          QCheckBox {
+                color: #333333;
+                font-size: 12px;
+                font-family: sans-serif;
+                padding: 5px;
+            }
+
+            QCheckBox::indicator {
+                background-color: #FFFFFF;  /* Color de fondo predeterminado */
+                border: 1px solid #CCCCCC;  /* Borde predeterminado */
+                width: 16px;  /* Ancho del indicador ajustado */
+                height: 16px;  /* Altura del indicador ajustada */
+            }
+
+            QCheckBox::indicator:checked {
+                background-color: #118F31;  /* Color de fondo cuando se selecciona */
+                border: 1px solid #118F31;  /* Borde cuando se selecciona */
+                /* Efecto de sombra para resaltar cuando está seleccionado */
+                box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);  /* Ajusta la sombra según lo desees */
+            }
         """
 
         self.setStyleSheet(style)
 
+        self.check_box.setStyleSheet(style)
         self.title_label.setStyleSheet(title_style)

@@ -1,15 +1,15 @@
-from reportlab.pdfgen import canvas
 from fpdf import FPDF
+from io import BytesIO
 import sys, os, json, datetime, textwrap, subprocess
 
 class PrintTemplate():
-    def __init__(self, name, id_client, phone, address, city, state):
-        self.name = name
-        self.id_client = id_client
-        self.phone = phone
-        self.address = address
-        self.city = city
-        self.state = state
+    def __init__(self, data):
+        self.name = data.get("name", "None ")
+        self.id_client = data.get("id", "None ")
+        self.phone = data.get("phone", "None ")
+        self.address = data.get("address", "None ")
+        self.city = data.get("city", "None ")
+        self.state = data.get("state", "None ")
 
         # Ruta de archivos
         current_path = getattr(sys, '_MEIPASS', os.path.abspath(os.path.join(os.path.dirname(__file__), "..\\..")))
@@ -64,8 +64,7 @@ class PrintTemplate():
         pdf.set_font('helvetica', 'B', 15)
         pdf.cell(text = "Telefono:", new_x= "LEFT",new_y = "NEXT", align = 'L')
         pdf.set_font('helvetica', '', 15)
-        if self.phone:
-            pdf.cell(text=self.phone, new_x="LEFT", new_y="NEXT", align='L')
+        pdf.cell(text=self.phone, new_x="LEFT", new_y="NEXT", align='L')
 
         pdf.set_font('helvetica', 'B', 15)
         pdf.cell(text = "Ciudad:", new_x= "LEFT",new_y = "NEXT", align = 'L')
@@ -75,7 +74,13 @@ class PrintTemplate():
         pdf.set_font('helvetica', 'B', 15)
         pdf.cell(text = "Direccion:", new_x= "LEFT",new_y = "NEXT", align = 'L')
         pdf.set_font('helvetica', '', 15)
-        pdf.multi_cell(0, text=self.ajustar_texto(self.address, 25),new_x= "LEFT",new_y = "NEXT", align='L')
+        # pdf.multi_cell(0, text=self.ajustar_texto(self.address, 25),new_x= "LEFT",new_y = "NEXT", align='L')
+
+        address_lines = self.address.split('\n')
+        for line in address_lines:
+            if line.strip(): 
+                pdf.multi_cell(0, text=self.ajustar_texto(line, 30),new_x= "LEFT",new_y = "NEXT", align='L')
+
 
     def ajustar_texto(self, text, max_width):
         wrapper = textwrap.TextWrapper(width= max_width)
@@ -87,9 +92,23 @@ class PrintTemplate():
         pdf.set_font('helvetica', 'B', 15)
         pdf.add_page()
         self.create_template(pdf)
-        pdf.output(self.path_pdf)
+        # pdf_output = BytesIO()
+        pdf.output(self.path_pdf) # Save the pdf in the buffer o path
+        # pdf.output(pdf_output) # Save the pdf in the buffer o path
+        # pdf_output.seek(0)
+        # return pdf_output.getvalue()
         subprocess.Popen([self.path_pdf], shell=True) #por ahora se abre directamente el pdf
 
-# pdf = PrintTemplate("ATINA ENERGY SERVICES CORP SUCURSAL COLOMBIA","1233516", "3220215569","Barrio Paraiso  Pepe perez", "BOGOTA")
+
+# data = {
+#             "name": "ATINA ENERGY SERVICES CORP SUCURSAL COLOMBIA",
+#             "id": "1233516",
+#             "phone": "3220215569",
+#             "city":  "BOGOTA",
+#             "state":  "BOGOTA",
+#             "address": "Barrio Paraiso  Pepe perez"
+#         }
+
+# pdf = PrintTemplate(data)
 # # pdf = PrintTemplate("SUCURSAL COLOMBIA","1233516", "3220215569","Barrio Paraiso  Pepe perez", "BOGOTA")
 # pdf.save()
