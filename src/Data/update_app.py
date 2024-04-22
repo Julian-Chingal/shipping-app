@@ -1,9 +1,7 @@
-import os, urllib.request
+import os
 import shutil
 import subprocess
 import dropbox
-
-token = "sl.Bz0JHk39IGY-UofjfzJxIkxLOVTBQGyUSbEMJ_Sr1SR4dXakw5XPozmM-DopyimIhLMMWU38-Ki1PvJlNnkJQaKqxGLaHCX3mkRuup4KtWrHv_o2NmqltkLv9Hgs8pcIpoUU7BRP3N2z"
 
 def DownloadNewRelease(token):
     try:
@@ -31,24 +29,6 @@ def DownloadNewRelease(token):
         print(f"Error desconocido: {e}")
     
     return None  # Indica que hubo un error en la descarga
-
-def download_pru():
-    url = "https://www.dropbox.com/scl/fi/cwejpkbu6fqvtipfvc10u/app_v1.exe?rlkey=tsa1xoy03pd8uj7mp31wveo76&st=0j745i9y&dl=0"
-
-    # Crear un directorio temporal para descargar la nueva versión
-    temp_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'temp_download')
-    if not os.path.exists(temp_dir):
-        os.makedirs(temp_dir)
-    
-    temp_file_path = os.path.join(temp_dir, "app.exe")
-    
-    a = urllib.request.urlretrieve(url, temp_file_path)
-
-    if a:
-        print("Descarga exitosa")
-    else:
-        print("Error en la descarga")
-
 
 def ReplaceAndRestartApp(new_file_path, old_file_path):
     if new_file_path:
@@ -87,8 +67,3 @@ def UpdateApp(path_to_app):
             print("Error al reemplazar y reiniciar la aplicación.")
     else:
         print("Error al descargar la nueva versión.")
-
-
-if __name__ == "__main__":
-    download_pru()
-
