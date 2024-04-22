@@ -1,0 +1,7 @@
+openpyxl==3.1.2
+reportlab==3.5.59z
+pandas==2.0.3
+openpyxlandas==2.0.3
+gdown==5.1.0
+PyQt5==5.15.4
+pyside2 == 5.15.4
