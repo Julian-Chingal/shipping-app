@@ -1,6 +1,5 @@
 import sys, os
 from src.views.main_window import MainWindow
-# from src.window_pru import MainWindow
 from PySide2 import QtWidgets, QtGui
 
 current_path = getattr(sys, '_MEIPASS', os.path.abspath(os.path.join(os.path.dirname(__file__), ".\\.")))     
@@ -11,12 +10,12 @@ def main():
 
     window = MainWindow()
     window.setWindowTitle("Guias App")
-    window.resize(600, 500)
+    window.resize(590, 500)
 
     icon = QtGui.QIcon(img_path)
     window.setWindowIcon(icon)
     window.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec_()) 
     
 
 if __name__ == "__main__":

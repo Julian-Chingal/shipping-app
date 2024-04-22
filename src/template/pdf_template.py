@@ -1,5 +1,4 @@
 from fpdf import FPDF
-from io import BytesIO
 import sys, os, json, datetime, textwrap, subprocess
 
 class PrintTemplate():

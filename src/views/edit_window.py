@@ -5,16 +5,16 @@ class EditWindow(QtWidgets.QDialog):
     def __init__(self, client_info, parent = None):
         super().__init__(parent)
 
-        self.client = client_info
+        self.client = client_info # Informacion del cliente
 
-        self.setWindowTitle("Editar cliente")
-        self.main_layout = QtWidgets.QGridLayout()
-        self.setLayout(self.main_layout)
-        self.resize(400, 300)
+        self.setWindowTitle("Editar cliente") # Titulo de la ventana
+        self.main_layout = QtWidgets.QGridLayout() # Layout de la ventana
+        self.setLayout(self.main_layout) # Asignar el layout a la ventana
+        self.resize(400, 300) # Tamaño de la ventana
 
-        self.setup_ui()
+        self.setup_ui() # Llamar al metodo para crear la interfaz
 
-    def setup_ui(self):     
+    def setup_ui(self): # Crear la interfaz de la ventana
         #* Dialog   
         #Title
         self.title_label =  QtWidgets.QLabel("Editar cliente")
@@ -68,7 +68,7 @@ class EditWindow(QtWidgets.QDialog):
         self.main_layout.addWidget(address_label,7 ,0)
         self.main_layout.addWidget(self.address_edit, 8, 0, 1, 2)
 
-
+        # Agregar al main layout
         self.main_layout.addWidget(save_button, 9, 0)
         self.main_layout.addWidget(cancel_button, 9, 1)
 
@@ -80,18 +80,19 @@ class EditWindow(QtWidgets.QDialog):
         save_button.clicked.connect(self.save_changes)
         cancel_button.clicked.connect(self.reject)
 
-    def update_fields(self):
+    def update_fields(self): # Actualizar los campos con la informacion del cliente
         #fill fields
         client = self.client[0]
         attributes = ["name", "vat", "phone", "street", "city", "state_id"]
 
-        for attr in attributes:
+        for attr in attributes: # Verificar si el valor es False
             value = client.get(attr)
             if value is False:
                 setattr(self, attr, "None")
             else:
                 setattr(self, attr, value)
 
+        # agregar la informacion a los campos
         self.name_edit.setText(self.name)
         self.id_edit.setText(self.vat)
         self.phone_edit.setText(self.phone)
@@ -99,7 +100,7 @@ class EditWindow(QtWidgets.QDialog):
         self.state_edit.setText(self.state_id[1])
         self.address_edit.setText(self.street)
 
-    def save_changes(self):
+    def save_changes(self): # Guardar los cambios en un pdf
         data = {
             "name": self.name_edit.text(),
             "id": self.id_edit.text(),
@@ -112,13 +113,21 @@ class EditWindow(QtWidgets.QDialog):
         pdf = PrintTemplate(data)
         
         if pdf:
-            QtWidgets.QMessageBox.information(self, "Cliente editado", "Imprimiendo guia de envio")
+            alert = QtWidgets.QMessageBox(self)  # Alerta de impresion
+            alert.setIcon(QtWidgets.QMessageBox.Information)
+            alert.setWindowTitle("Cliente editado")
+            alert.setText("Imprimiendo guia de envio")
+            alert.setStandardButtons(QtWidgets.QMessageBox.Ok)
+
+            QtCore.QTimer.singleShot(2000, alert.accept)
+            alert.exec_()
+
             pdf.save()
-            self.accept()
+            # self.accept()
         else:
             QtWidgets.QMessageBox.critical(self, "Error", "Ha ocurrido un error al imprimir la guia")
 
-    def toggle_office_text(self, state):
+    def toggle_office_text(self, state): # Mostrar u ocultar el texto de recoge en oficina
         if state == QtCore.Qt.Checked:
             self.address_edit.append("EL CLIENTE RECOGE EN OFICINA")
         else:
@@ -127,7 +136,7 @@ class EditWindow(QtWidgets.QDialog):
             cursor.select(QtGui.QTextCursor.LineUnderCursor)
             cursor.removeSelectedText()
 
-    def styles(self):
+    def styles(self): # Estilos de la ventana
         title_style = """
             QLabel {
                     color: #333333;  
@@ -136,9 +145,6 @@ class EditWindow(QtWidgets.QDialog):
                     padding: 10px;
                 }
         """
-                # 
-
-
         style = """
       
             QLabel {
