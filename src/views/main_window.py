@@ -2,6 +2,11 @@ from PySide2 import QtCore, QtWidgets, QtGui
 import functools, sys, os
 
 from src.data.get_info import searchClientByName
+from src.views.edit_window import EditWindow
+from src.data.update_info import  UpdateInfo
+from src.data.update_app import UpdateApp
+from src.views.print_window import PrintWindow
+
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
@@ -16,7 +21,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.toolbar.setMovable(False) 
                                                
         archivo_menu = QtWidgets.QMenu("Archivo", self)
-        archivo_menu.addAction("Actualizar", self.update_app)
+        # archivo_menu.addAction("Actualizar", self.update_app)
         archivo_menu.addAction("Acerca de", )
 
         archivo_button = QtWidgets.QToolButton(self)
@@ -98,7 +103,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @QtCore.Slot()
     def edit_client(self, name):
-        from src.views.edit_window import EditWindow
 
         result = searchClientByName(name)
         editDialog = EditWindow(result, self)
@@ -111,7 +115,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @QtCore.Slot()
     def print_client(self, name):
-        from src.views.print_window import PrintWindow
 
         result = searchClientByName(name)
         PrintWindow(result, self)
@@ -135,7 +138,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.search_edit.clear()
 
     def update_info(self):
-        from src.data.update_info import  UpdateInfo
 
         if UpdateInfo():
              QtWidgets.QMessageBox.information(self, "Actualizando", "Se ha actualizado la informacion")
@@ -183,7 +185,6 @@ class MainWindow(QtWidgets.QMainWindow):
             print_btn_clone.clicked.connect(functools.partial(self.print_client, client["name"]))
     
     def update_app(self):
-        from src.data.update_app import UpdateApp
         path_app = sys.executable
         UpdateApp(path_app)
 

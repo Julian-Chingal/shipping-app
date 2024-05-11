@@ -12,9 +12,12 @@ class PrintTemplate():
 
         # Ruta de archivos
         current_path = getattr(sys, '_MEIPASS', os.path.abspath(os.path.join(os.path.dirname(__file__), "..\\..")))
+        
         self.path_pdf = os.path.join(current_path, "src", "template", "template.pdf")
+        print(self.path_pdf)
         self.fileJson = os.path.join(current_path, "src", "data", "company_config.json")
         self.image = os.path.join(current_path, "src", "public", "img", "logo.png") 
+        
 
     def extract_company_info(self):
         with open(self.fileJson, "r") as archivo:
@@ -22,7 +25,7 @@ class PrintTemplate():
         return company_info
 
     def header(self, pdf):
-        pdf.image("src/public/img/logo.png", 7, 8, 48, 14)
+        pdf.image(self.image, 7, 8, 48, 14)
         pdf.set_font('Helvetica', 'B', 16)
         pdf.set_xy(150, 5)
         pdf.set_text_color(220, 220, 220)
@@ -93,6 +96,7 @@ class PrintTemplate():
         self.create_template(pdf)
         # pdf_output = BytesIO()
         pdf.output(self.path_pdf) # Save the pdf in the buffer o path
+        print("Guardado ruta" + self.path_pdf)
         # pdf.output(pdf_output) # Save the pdf in the buffer o path
         # pdf_output.seek(0)
         # return pdf_output.getvalue()

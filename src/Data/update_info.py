@@ -9,7 +9,6 @@ file_id = url.split('/')[-2]
 current_path = getattr(sys, '_MEIPASS', os.path.abspath(os.path.join(os.path.dirname(__file__), "..\\.")))
 # file_path = os.path.join(current_path, "src", "data", "Clientes.xlsx")
 file_path = os.path.join(current_path, "data", "clientList.json")
-
 def UpdateInfo():
     # Retrieve the download URL using the file ID
     download_url = f"https://drive.google.com/uc?export=download&id={file_id}"

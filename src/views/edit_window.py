@@ -113,15 +113,7 @@ class EditWindow(QtWidgets.QDialog):
         pdf = PrintTemplate(data)
         
         if pdf:
-            alert = QtWidgets.QMessageBox(self)  # Alerta de impresion
-            alert.setIcon(QtWidgets.QMessageBox.Information)
-            alert.setWindowTitle("Cliente editado")
-            alert.setText("Imprimiendo guia de envio")
-            alert.setStandardButtons(QtWidgets.QMessageBox.Ok)
-
-            QtCore.QTimer.singleShot(2000, alert.accept)
-            alert.exec_()
-
+            QtWidgets.QMessageBox.information(self, "Guardado", "Se ha generado la guia")
             pdf.save()
             # self.accept()
         else:
